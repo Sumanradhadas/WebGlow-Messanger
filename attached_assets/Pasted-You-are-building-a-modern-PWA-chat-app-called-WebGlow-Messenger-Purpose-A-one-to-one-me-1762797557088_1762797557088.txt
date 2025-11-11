@@ -1,0 +1,93 @@
+You are building a modern PWA chat app called **WebGlow Messenger**.
+
+🔹 Purpose:
+A one-to-one messenger between admin (WebGlow) and clients, similar to WhatsApp — with real push notifications, “Add to Home Screen” install button, and accurate online/last-seen status.
+
+---
+
+## ✅ Features to Verify & Implement
+
+1. **PWA Install Button**
+   - Add a floating or top-bar “Install App” button for browsers that support PWA installation.
+   - Confirm that `manifest.json` and `service-worker.js` are correctly configured.
+   - Test if “Add to Home Screen” works on mobile browsers (especially Chrome on Android).
+   - When installed, the app should open in standalone mode (no browser UI).
+
+2. **Push Notification System (like WhatsApp)**
+   - Use **Firebase Cloud Messaging (FCM)** integrated with Supabase Auth users.
+   - Store each user's `fcm_token` in Supabase (in the `users` table).
+   - When:
+     - Admin sends message → only that specific client receives push notification.
+     - Client sends message → only admin receives notification.
+   - Notifications should include:
+     - Sender name
+     - Message text (or “📎 Attachment” if media)
+   - Notifications must appear:
+     - On lock screen
+     - In notification tray
+     - As floating heads-up alert (if supported)
+   - Must not trigger when the recipient is already active on the messenger page.
+
+3. **Realtime Online / Last Seen Tracking**
+   - Maintain a `status` field in `users` table: `{ online: boolean, last_seen: timestamp }`
+   - Update automatically:
+     - `online = true` when user opens the messenger
+     - `online = false` and `last_seen = now()` when user closes tab or disconnects
+   - Use Supabase Realtime `presence` or WebSocket heartbeat to detect live connections.
+   - Display “Online” or “Last seen at [time]” below username in chat header.
+   - Ensure it’s accurate, not static text.
+
+4. **Smart Notification Logic**
+   - Implement check before sending notification:
+     ```js
+     if (!receiver.isOnline) sendPushNotification()
+     ```
+     So that notifications only appear when recipient is offline or app is in background.
+
+5. **Security and Privacy**
+   - Only sender and receiver can read their messages (Supabase Row Level Policies).
+   - Validate notification senders with Supabase Auth UID before push.
+
+6. **Tech Confirmations**
+   - Verify all following packages are installed:
+     ```
+     @supabase/supabase-js
+     firebase
+     framer-motion
+     tailwindcss
+     vite-plugin-pwa
+     ```
+   - Confirm `manifest.json`, `service-worker.js`, and Firebase messaging service worker (`firebase-messaging-sw.js`) exist and properly linked in index.html.
+
+7. **UI Enhancements**
+   - Add a bell icon toggle for enabling/disabling notifications manually.
+   - Show animated green dot for online users.
+   - Smooth status fade transitions using Framer Motion.
+
+---
+
+## 🧩 Expected Output
+- Confirm existence of:
+  - ✅ PWA install button working
+  - ✅ Firebase Cloud Messaging initialized and sending targeted push notifications
+  - ✅ Online/last-seen tracking live and accurate
+- If any of these missing, generate and add the complete React + Supabase + Firebase code to make it work.
+
+Use modern navy-blue dark UI and maintain consistency with rest of WebGlow Messenger styling.
+
+---
+
+## 💾 Tech References
+- Supabase Realtime presence API
+- Firebase Cloud Messaging for web (V9 modular)
+- Vite + PWA plugin configuration for install button
+- Navigator.onLine / beforeunload event for status updates
+
+---
+
+Once setup complete, return a clear verification log:
+✅ PWA working  
+✅ Notification system connected  
+✅ Online/last-seen tracking live  
+❌ Any missing feature details (with file path)
+
